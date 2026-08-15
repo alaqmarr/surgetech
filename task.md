@@ -1,0 +1,17 @@
+- [x] Build script & DB Path
+- [x] Seed Script (prisma/seed.ts)
+- [x] Security headers in next.config.ts
+- [x] SEO Config (robots.ts & sitemap.ts)
+- [x] .gitignore & .env
+- [x] HTML entity escaping in email templates
+- [x] Auth operator precedence fix
+- [x] Middleware coverage for /api/admin/*
+- [x] Admin settings role check (SUPER_ADMIN)
+- [x] Enquiry API type fix & scenario whitelist
+- [x] Setup API Race condition fix
+- [x] Calculator Engine fixes
+- [x] Fix Next.js async params compatibility
+- [x] Add missing Tailwind theme definitions
+- [x] Fix malformed text-white/ classes
+- [x] Fix nested <main> landmarks
+- [x] Remove dead calculator-client.tsx component

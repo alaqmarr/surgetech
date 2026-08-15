@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         String   @default("ADMIN") // SUPER_ADMIN or ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                String   @id @default(uuid())
+  contactEmail      String?
+  contactPhone      String?
+  contactAddress    String?
+  smtpHost          String?
+  smtpPort          Int?
+  smtpUser          String?
+  smtpPassEncrypted String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Enquiry {
+  id                  String                @id @default(uuid())
+  name                String?
+  email               String?
+  phone               String?
+  pinCode             String
+  monthlyBill         Float
+  propertyType        String
+  status              String                @default("NEW") // NEW, QUOTED, FOLLOW_UP, CONVERTED, CLOSED
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  
+  calculationSnapshot CalculationSnapshot[]
+  quotes              Quote[]
+  emailLogs           EmailLog[]
+}
+
+model CalculationSnapshot {
+  id                      String   @id @default(uuid())
+  enquiryId               String
+  enquiry                 Enquiry  @relation(fields: [enquiryId], references: [id])
+  recommendedSystemSizeKw Float
+  annualSavings           Float
+  paybackYears            Float
+  lifetimeSavings25Y      Float
+  createdAt               DateTime @default(now())
+  
+  quotes                  Quote[]
+}
+
+model Quote {
+  id                    String              @id @default(uuid())
+  enquiryId             String
+  enquiry               Enquiry             @relation(fields: [enquiryId], references: [id])
+  calculationSnapshotId String
+  calculationSnapshot   CalculationSnapshot @relation(fields: [calculationSnapshotId], references: [id])
+  quoteNumber           String
+  version               Int                 @default(1)
+  status                String              @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
+  validUntil            DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String   @unique // e.g., NEW_ENQUIRY, QUOTE_FOLLOW_UP
+  subject   String
+  body      String // Store as text/HTML with variables like {{customerName}}
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  emailLogs      EmailLog[]
+  automationRule AutomationRule[]
+}
+
+model EmailLog {
+  id         String         @id @default(uuid())
+  enquiryId  String?
+  enquiry    Enquiry?       @relation(fields: [enquiryId], references: [id])
+  templateId String?
+  template   EmailTemplate? @relation(fields: [templateId], references: [id])
+  status     String         @default("PENDING") // PENDING, SENT, FAILED
+  error      String?
+  createdAt  DateTime       @default(now())
+}
+
+model AutomationRule {
+  id          String        @id @default(uuid())
+  name        String
+  trigger     String // NEW_ENQUIRY, QUOTE_SENT
+  delayHours  Int           @default(0)
+  templateId  String
+  template    EmailTemplate @relation(fields: [templateId], references: [id])
+  enabled     Boolean       @default(true)
+  maxAttempts Int           @default(3)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Tariff {
+  id               String   @id @default(uuid())
+  discomName       String
+  consumerCategory String
+  fixedCharge      Float
+  energySlabs      String // JSON string representing slabs [{limit: 100, rate: 5.5}, ...]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([discomName, consumerCategory])
+}
+
+model PincodeMapping {
+  id           String   @id @default(uuid())
+  pincode      String   @unique
+  city         String
+  state        String
+  likelyDiscom String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  title     String
+  location  String
+  type      String   // Residential, Commercial, Industrial
+  size      String
+  savings   String
+  quote     String?  // Customer testimonial
+  author    String?  // Customer name
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  type      String   // Residential, Commercial, etc.
+  message   String
+  status    String   @default("NEW") // NEW, READ, REPLIED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationEmail {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
