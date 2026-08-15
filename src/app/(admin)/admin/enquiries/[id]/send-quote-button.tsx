@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Send, CheckCircle2, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -10,6 +11,11 @@ export function SendQuoteButton({ enquiryId, status }: { enquiryId: string, stat
   const [currentStatus, setCurrentStatus] = useState(status);
   const [showModal, setShowModal] = useState(false);
   const [customMessage, setCustomMessage] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSendQuote = async () => {
     setIsSending(true);
@@ -61,8 +67,8 @@ export function SendQuoteButton({ enquiryId, status }: { enquiryId: string, stat
         Send Formal Quote
       </Button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm">
+      {showModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm">
           <div className="bg-navy-900 border border-white/10 rounded-xl max-w-md w-full shadow-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5">
               <h3 className="font-heading text-lg font-bold text-white">Send Formal Quote</h3>
@@ -109,7 +115,8 @@ export function SendQuoteButton({ enquiryId, status }: { enquiryId: string, stat
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
