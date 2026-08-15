@@ -13,6 +13,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const { id } = await params;
 
+    let customMessage = "";
+    try {
+      const body = await req.json();
+      if (body.customMessage) {
+        customMessage = body.customMessage;
+      }
+    } catch (e) {
+      // Ignore if no JSON body
+    }
+
     const enquiry = await prisma.enquiry.findUnique({
       where: { id },
       include: {
@@ -63,11 +73,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     if (enquiry.email) {
       try {
+        const customMessageHtml = customMessage 
+          ? `<div style="background-color: #f8fafc; border-left: 4px solid #06b6d4; padding: 15px; margin-bottom: 25px; border-radius: 4px;"><p style="margin: 0; font-style: italic; color: #334155;">${customMessage.replace(/\n/g, "<br>")}</p></div>`
+          : "";
+
         await sendTemplatedEmail({
           to: enquiry.email,
           templateName: "QUOTE_SENT",
           variables: {
             customerName: enquiry.name || "Customer",
+            customMessageHtml: customMessageHtml,
             quoteNumber: quoteNumber,
             location: `PIN ${enquiry.pinCode}`,
             systemSizeKw: snapshot.recommendedSystemSizeKw,
