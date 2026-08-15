@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { SendQuoteButton } from "./send-quote-button";
 
 export const dynamic = 'force-dynamic';
 
@@ -101,12 +102,7 @@ export default async function EnquiryDetail({ params }: { params: Promise<{ id: 
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full" />
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10">
           <h3 className="text-xl font-bold text-blue-400 mb-4 md:mb-0">Quotes & Communication</h3>
-          <form action={async () => {
-             "use server";
-             // Logic to be implemented or hooked up to an API
-          }}>
-            <Button variant="solar">Send Formal Quote</Button>
-          </form>
+          <SendQuoteButton enquiryId={enquiry.id} status={enquiry.status} />
         </div>
 
         <div className="relative z-10">
