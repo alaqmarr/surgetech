@@ -27,9 +27,9 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-navy-950 gradient-mesh-dark overflow-hidden selection:bg-cyan-500/30">
+    <div className="flex h-screen bg-navy-950 gradient-mesh-dark overflow-hidden selection:bg-cyan-500/30 print:bg-white print:overflow-visible print:h-auto">
       {/* Sidebar */}
-      <aside className="w-64 glass-dark border-r border-white/10 flex flex-col relative z-20">
+      <aside className="w-64 glass-dark border-r border-white/10 flex flex-col relative z-20 print:hidden">
         <div className="h-20 flex items-center px-6 border-b border-white/10">
           <h1 className="text-xl font-bold font-heading text-white flex items-center">
              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mr-3 shadow-lg shadow-cyan-500/20">
@@ -120,8 +120,8 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto relative z-10">
-        <div className="p-6 md:p-10">
+      <main className="flex-1 overflow-y-auto relative z-10 print:overflow-visible">
+        <div className="p-6 md:p-10 print:p-0">
            {children}
         </div>
       </main>

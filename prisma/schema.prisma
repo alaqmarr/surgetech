@@ -72,8 +72,21 @@ model Quote {
   version               Int                 @default(1)
   status                String              @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
   validUntil            DateTime?
+  
+  // New advanced quotation fields
+  systemType            String?             // e.g. On-Grid, Off-Grid
+  structureType         String?             // e.g. Flush Mount, Elevated
+  subtotal              Float?
+  taxAmount             Float?
+  discount              Float?
+  totalAmount           Float?
+  notes                 String?
+  terms                 String?
+
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
+  
+  lineItems             QuoteLineItem[]
 }
 
 model EmailTemplate {
@@ -168,4 +181,30 @@ model NotificationEmail {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CatalogItem {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  category    String?  
+  uom         String   
+  unitPrice   Float
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QuoteLineItem {
+  id          String   @id @default(uuid())
+  quoteId     String
+  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  quantity    Float
+  uom         String
+  unitPrice   Float
+  total       Float
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
