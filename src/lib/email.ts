@@ -263,7 +263,7 @@ export async function sendTemplatedEmail({
 
   try {
     const info = await transporter.sendMail({
-      from: \`"Surgetech Solar" <\${settings.smtpUser}>\`,
+      from: `"Surgetech Solar" <${settings.smtpUser}>`,
       to,
       subject,
       html: body,
